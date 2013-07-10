@@ -1,0 +1,2 @@
+8x8 tileSize
+10x18 tiles gameSize
