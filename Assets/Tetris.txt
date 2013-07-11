@@ -1,5 +1,4 @@
 8x8 tileSize
 10x18 tiles gameSize
 
-Reversed Z, Reversed L!
 Moving left and right after falling down should be allowed!

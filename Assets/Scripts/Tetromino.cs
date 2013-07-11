@@ -25,7 +25,9 @@ public class Tetromino : MonoBehaviour {
 	float fallTimer;
 	float maxMoveTimer;
 	float moveTimer;
-	List<Vector2> coordinates;
+	float maxRotateTimer;
+	float rotateTimer;
+	List<Vector2> coordinates; //Pivot is always at first index (taking advantage of this in rotate())
 	bool onGround;
 	bool[,] gameTiles;
 	
@@ -40,14 +42,16 @@ public class Tetromino : MonoBehaviour {
 		fallTimer=0;
 		maxMoveTimer=0.5f;
 		moveTimer=0;
+		maxRotateTimer=0.5f;
+		rotateTimer=0;
 		onGround=false;
 		coordinates=new List<Vector2>();
 		this.type=type;
 		switch(type)
 		{
 		case TetrominoType.I:
-			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(5, 0));
 			coordinates.Add(new Vector2(6, 0));
 			break;
@@ -58,32 +62,32 @@ public class Tetromino : MonoBehaviour {
 			coordinates.Add(new Vector2(5, 1));
 			break;
 		case TetrominoType.Z:
+			coordinates.Add(new Vector2(4, 0));
 			coordinates.Add(new Vector2(3, 1));
 			coordinates.Add(new Vector2(4, 1));
-			coordinates.Add(new Vector2(4, 0));
 			coordinates.Add(new Vector2(5, 0));
 			break;
 		case TetrominoType.RZ:
-			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(4, 1));
 			coordinates.Add(new Vector2(5, 1));
 			break;
 		case TetrominoType.T:
-			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(4, 1));
 			coordinates.Add(new Vector2(5, 0));
 			break;
 		case TetrominoType.L:
+			coordinates.Add(new Vector2(4, 0));
 			coordinates.Add(new Vector2(3, 1));
 			coordinates.Add(new Vector2(3, 0));
-			coordinates.Add(new Vector2(4, 0));
 			coordinates.Add(new Vector2(5, 0));
 			break;
 		case TetrominoType.RL:
-			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(3, 0));
 			coordinates.Add(new Vector2(5, 0));
 			coordinates.Add(new Vector2(5, 1));
 			break;
@@ -147,6 +151,51 @@ public class Tetromino : MonoBehaviour {
 		}
 	}
 	
+	void rotate()
+	{
+		if(type==TetrominoType.O)
+		{
+			return;	
+		}
+		Vector2 offset=coordinates[0];
+		List<Vector2> newCoordinates=coordinates;
+		float rotation=(float)Math.PI*1.0f/2.0f;
+		if(type==TetrominoType.I)
+		{
+			rotation=-rotation;	
+		}
+		for(int i=0; i<newCoordinates.Count; i++)
+		{
+			//Move to origin
+			newCoordinates[i]-=offset;
+			//Rotation
+			Vector2 temp=newCoordinates[i];
+			newCoordinates[i]=new Vector2(	temp.x*(float)Math.Cos(rotation)+temp.y*(float)-Math.Sin (rotation),
+											temp.x*(float)Math.Sin(rotation)+temp.y*(float)Math.Cos (rotation));
+			//Back to original position
+			newCoordinates[i]+=offset;
+		}
+		//Collision check
+		bool colliding=false;
+		foreach(Vector2 coordinate in newCoordinates)
+		{
+			if(	coordinate.x<0 ||
+				coordinate.x>gameTiles.GetLength(0)-1 ||
+				coordinate.y<0 ||
+				coordinate.y>gameTiles.GetLength(1)-1 ||
+				gameTiles[(int)coordinate.x, (int)coordinate.y])	
+			{
+				colliding=true;	
+			}
+		}
+		
+		if(!colliding)
+		{
+			//Overwrite coordinates
+			coordinates=newCoordinates;
+		}
+	}
+	
 	//Interface for Game class
 	public bool getOnGround()
 	{
@@ -158,11 +207,32 @@ public class Tetromino : MonoBehaviour {
 		return coordinates;	
 	}
 	
+	public void printCoordinates()
+	{
+		foreach(Vector2 coordinate in coordinates)
+		{
+			Debug.Log (coordinate);	
+		}
+	}
+	
 	void Update ()
 	{
 		//TODO: Movement
+		rotateTimer+=Time.deltaTime;
+		if(rotateTimer>=maxRotateTimer)
+		{
+			if(Input.GetAxisRaw("Vertical")>0)
+			{
+				rotate();
+				if(isOnGround())
+				{
+					return;	
+				}
+				rotateTimer=0;
+			}
+		}
 		
-		/*moveTimer+=Time.deltaTime;
+		moveTimer+=Time.deltaTime;
 		if(moveTimer>=maxMoveTimer)
 		{
 			int direction=0;
@@ -200,6 +270,6 @@ public class Tetromino : MonoBehaviour {
 			{
 				return;	
 			}
-		}*/
+		}
 	}
 }

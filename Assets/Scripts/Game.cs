@@ -12,12 +12,12 @@ public class Game : MonoBehaviour {
 	};
 	bool[,] gameTiles;
 	GameObject activeTetromino;
+	System.Random random;
 	
 	void Start ()
 	{
 		gameTiles=new bool[10, 18];
-		createTetromino();
-		printTiles();
+		random=new System.Random();
 	}
 	
 	bool isScreenFilled()
@@ -81,9 +81,10 @@ public class Game : MonoBehaviour {
 		activeTetromino.transform.position=new Vector3(gameTiles.GetLength(0)/2-1, 0, 0);
 		activeTetromino.AddComponent("Tetromino");
 		Tetromino script=(Tetromino)activeTetromino.GetComponent("Tetromino");
-		//TODO: random
-		script.setType(Tetromino.TetrominoType.L);
-		script.setMaxFallTimer(1);
+		//Get random Tetromino
+		int tetrominoCount=Enum.GetNames(typeof(Tetromino.TetrominoType)).Length;
+		script.setType((Tetromino.TetrominoType)random.Next(tetrominoCount));
+		script.setMaxFallTimer(0.75f);
 		script.setGameTiles(gameTiles);
 	}
 	
@@ -142,7 +143,7 @@ public class Game : MonoBehaviour {
 					List<Vector2> coordinates=script.getCoordinates();
 					foreach(Vector2 coordinate in coordinates)
 					{
-						if(coordinate.x==x && coordinate.y==y)
+						if((int)coordinate.x==x && (int)coordinate.y==y)
 						{
 							row+=1+ " ";
 							placed=true;
@@ -166,7 +167,7 @@ public class Game : MonoBehaviour {
 	
 	void Update ()
 	{
-		/*printTiles();
+		printTiles();
 		if(activeTetromino==null)
 		{
 			if(isScreenFilled())
@@ -194,6 +195,6 @@ public class Game : MonoBehaviour {
 			{
 				destroyTetromino();	
 			}
-		}*/
+		}
 	}
 }
