@@ -9,8 +9,10 @@ public class Tetromino : MonoBehaviour {
 		I,
 		O,
 		Z,
+		RZ,
 		T,
-		L
+		L,
+		RL
 	};
 	
 	enum Direction
@@ -54,6 +56,38 @@ public class Tetromino : MonoBehaviour {
 			coordinates.Add(new Vector2(5, 0));
 			coordinates.Add(new Vector2(4, 1));
 			coordinates.Add(new Vector2(5, 1));
+			break;
+		case TetrominoType.Z:
+			coordinates.Add(new Vector2(3, 1));
+			coordinates.Add(new Vector2(4, 1));
+			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(5, 0));
+			break;
+		case TetrominoType.RZ:
+			coordinates.Add(new Vector2(3, 0));
+			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(4, 1));
+			coordinates.Add(new Vector2(5, 1));
+			break;
+		case TetrominoType.T:
+			coordinates.Add(new Vector2(3, 0));
+			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(4, 1));
+			coordinates.Add(new Vector2(5, 0));
+			break;
+		case TetrominoType.L:
+			coordinates.Add(new Vector2(3, 1));
+			coordinates.Add(new Vector2(3, 0));
+			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(5, 0));
+			break;
+		case TetrominoType.RL:
+			coordinates.Add(new Vector2(3, 0));
+			coordinates.Add(new Vector2(4, 0));
+			coordinates.Add(new Vector2(5, 0));
+			coordinates.Add(new Vector2(5, 1));
+			break;
+		default:
 			break;
 		}
 	}
@@ -126,14 +160,9 @@ public class Tetromino : MonoBehaviour {
 	
 	void Update ()
 	{
-		
 		//TODO: Movement
-		if(isOnGround())
-		{
-			return;
-		}
 		
-		moveTimer+=Time.deltaTime;
+		/*moveTimer+=Time.deltaTime;
 		if(moveTimer>=maxMoveTimer)
 		{
 			int direction=0;
@@ -153,12 +182,12 @@ public class Tetromino : MonoBehaviour {
 					moveHorizontally(direction);
 				}
 				moveTimer=0;
+				
+				if(isOnGround())
+				{
+					return;
+				}
 			}
-		}
-		
-		if(isOnGround())
-		{
-			return;	
 		}
 		
 		fallTimer+=Time.deltaTime;
@@ -166,6 +195,11 @@ public class Tetromino : MonoBehaviour {
 		{
 			fallDown();
 			fallTimer=0;
-		}
+			
+			if(isOnGround())
+			{
+				return;	
+			}
+		}*/
 	}
 }

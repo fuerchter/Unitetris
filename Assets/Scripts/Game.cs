@@ -10,16 +10,14 @@ public class Game : MonoBehaviour {
 		Empty,
 		Filled
 	};
-	Vector2 gameSize;
 	bool[,] gameTiles;
 	GameObject activeTetromino;
 	
 	void Start ()
 	{
-		gameSize=new Vector2(10, 18);
-		gameTiles=new bool[(int)gameSize.x, (int)gameSize.y];
+		gameTiles=new bool[10, 18];
 		createTetromino();
-		//destroyTetromino();
+		printTiles();
 	}
 	
 	bool isScreenFilled()
@@ -31,7 +29,7 @@ public class Game : MonoBehaviour {
 	{
 		List<int> res=new List<int>();
 		//Going through all the rows from bottom to top
-		for(int y=(int)gameSize.y-1; y>=0; y--)
+		for(int y=gameTiles.GetLength(1)-1; y>=0; y--)
 		{
 			//Once we found an empty row there can be now further filled rows
 			if(isRowType(y, RowType.Empty))
@@ -53,7 +51,7 @@ public class Game : MonoBehaviour {
 	void removeRow(int row)
 	{
 		//Setting row false
-		for(int x=0; x<gameSize.x; x++)
+		for(int x=0; x<gameTiles.GetLength(0); x++)
 		{
 			gameTiles[x, row]=false;	
 		}
@@ -68,7 +66,7 @@ public class Game : MonoBehaviour {
 			else
 			{
 				//Moving current row down a tile
-				for(int x=0; x<gameSize.x; x++)
+				for(int x=0; x<gameTiles.GetLength(0); x++)
 				{
 					gameTiles[x, y+1]=gameTiles[x, y];
 					gameTiles[x, y]=false;
@@ -80,11 +78,11 @@ public class Game : MonoBehaviour {
 	void createTetromino()
 	{
 		activeTetromino=new GameObject();
-		activeTetromino.transform.position=new Vector3(gameSize.x/2-1, 0, 0);
+		activeTetromino.transform.position=new Vector3(gameTiles.GetLength(0)/2-1, 0, 0);
 		activeTetromino.AddComponent("Tetromino");
 		Tetromino script=(Tetromino)activeTetromino.GetComponent("Tetromino");
 		//TODO: random
-		script.setType(Tetromino.TetrominoType.I);
+		script.setType(Tetromino.TetrominoType.L);
 		script.setMaxFallTimer(1);
 		script.setGameTiles(gameTiles);
 	}
@@ -103,7 +101,7 @@ public class Game : MonoBehaviour {
 	
 	bool isRowType(int row, RowType type)
 	{
-		for(int x=0; x<gameSize.x; x++)
+		for(int x=0; x<gameTiles.GetLength(0); x++)
 		{
 			switch(type)
 			{
@@ -131,11 +129,10 @@ public class Game : MonoBehaviour {
 	
 	void printTiles()
 	{
-		
-		for(int y=0; y<gameSize.y; y++)
+		for(int y=0; y<gameTiles.GetLength(1); y++)
 		{
 			string row=""+y+ "\t";
-			for(int x=0; x<gameSize.x; x++)
+			for(int x=0; x<gameTiles.GetLength(0); x++)
 			{
 				//Adding Tetromino to printout
 				if(!gameTiles[x, y] && activeTetromino!=null)
@@ -169,7 +166,7 @@ public class Game : MonoBehaviour {
 	
 	void Update ()
 	{
-		printTiles();
+		/*printTiles();
 		if(activeTetromino==null)
 		{
 			if(isScreenFilled())
@@ -197,6 +194,6 @@ public class Game : MonoBehaviour {
 			{
 				destroyTetromino();	
 			}
-		}
+		}*/
 	}
 }
