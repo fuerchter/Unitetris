@@ -96,14 +96,14 @@ public class Tetromino : MonoBehaviour {
 		}
 	}
 	
+	public void setMaxFallTimer(float maxFallTimer)
+	{
+		this.maxFallTimer=maxFallTimer;
+	}
+	
 	public void setGameTiles(bool[,] gameTiles)
 	{
 		this.gameTiles=gameTiles;
-	}
-	
-	public void setMaxFallTimer(float maxFallTimer)
-	{
-		this.maxFallTimer=maxFallTimer;	
 	}
 	
 	//Checks whether we either are in the bottom row or have tiles below us
@@ -158,8 +158,8 @@ public class Tetromino : MonoBehaviour {
 			return;	
 		}
 		Vector2 offset=coordinates[0];
-		List<Vector2> newCoordinates=coordinates;
-		float rotation=(float)Math.PI*1.0f/2.0f;
+		List<Vector2> newCoordinates=new List<Vector2>(coordinates);
+		double rotation=Math.PI/2;
 		if(type==TetrominoType.I)
 		{
 			rotation=-rotation;	
@@ -170,8 +170,8 @@ public class Tetromino : MonoBehaviour {
 			newCoordinates[i]-=offset;
 			//Rotation
 			Vector2 temp=newCoordinates[i];
-			newCoordinates[i]=new Vector2(	temp.x*(float)Math.Cos(rotation)+temp.y*(float)-Math.Sin (rotation),
-											temp.x*(float)Math.Sin(rotation)+temp.y*(float)Math.Cos (rotation));
+			newCoordinates[i]=new Vector2(	(float)(temp.x*Math.Cos(rotation)+temp.y*-Math.Sin (rotation)),
+											(float)(temp.x*Math.Sin(rotation)+temp.y*Math.Cos (rotation)));
 			//Back to original position
 			newCoordinates[i]+=offset;
 		}
@@ -188,7 +188,6 @@ public class Tetromino : MonoBehaviour {
 				colliding=true;	
 			}
 		}
-		
 		if(!colliding)
 		{
 			//Overwrite coordinates
@@ -211,13 +210,12 @@ public class Tetromino : MonoBehaviour {
 	{
 		foreach(Vector2 coordinate in coordinates)
 		{
-			Debug.Log (coordinate);	
+			Debug.Log (coordinate.x+ " " +coordinate.y);	
 		}
 	}
 	
 	void Update ()
 	{
-		//TODO: Movement
 		rotateTimer+=Time.deltaTime;
 		if(rotateTimer>=maxRotateTimer)
 		{
