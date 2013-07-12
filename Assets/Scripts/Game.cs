@@ -11,12 +11,18 @@ public class Game : MonoBehaviour {
 		Filled
 	};
 	bool[,] gameTiles;
+	GameObject[,] gameBlocks;
 	GameObject activeTetromino;
 	System.Random random;
 	
 	void Start ()
 	{
 		gameTiles=new bool[10, 18];
+		/*for(int i=0; i<gameTiles.GetLength(0)-1; i++)
+		{
+			gameTiles[i, 1]=true;	
+		}*/
+		gameBlocks=new GameObject[gameTiles.GetLength (0), gameTiles.GetLength(1)];
 		random=new System.Random();
 	}
 	
@@ -84,7 +90,7 @@ public class Game : MonoBehaviour {
 		//Get random Tetromino
 		int tetrominoCount=Enum.GetNames(typeof(Tetromino.TetrominoType)).Length;
 		script.setType((Tetromino.TetrominoType)random.Next(tetrominoCount));
-		script.setMaxFallTimer(0.75f);
+		script.setMaxFallTimer(0.25f);
 		script.setGameTiles(gameTiles);
 	}
 	
@@ -92,9 +98,11 @@ public class Game : MonoBehaviour {
 	{
 		Tetromino script=(Tetromino)activeTetromino.GetComponent("Tetromino");
 		List<Vector2> coordinates=script.getCoordinates();
-		foreach(Vector2 coordinate in coordinates)
+		List<GameObject> blocks=script.getBlocks();
+		for(int i=0; i<coordinates.Count; i++)
 		{
-			gameTiles[(int)coordinate.x, (int)coordinate.y]=true;	
+			gameTiles[(int)coordinates[i].x, (int)coordinates[i].y]=true;	
+			GameObject.Destroy(blocks[i]);
 		}
 		GameObject.Destroy(activeTetromino);
 		activeTetromino=null;
@@ -167,12 +175,34 @@ public class Game : MonoBehaviour {
 	
 	void Update ()
 	{
+		for(int y=gameTiles.GetLength(1)-1; y>=0; y--)
+		{
+			for(int x=0; x<gameTiles.GetLength (0); x++)
+			{
+				if(gameTiles[x, y])
+				{
+					if(gameBlocks[x, y]==null)
+					{
+						gameBlocks[x, y]=GameObject.CreatePrimitive(PrimitiveType.Cube);
+						gameBlocks[x, y].transform.position=new Vector3(x, -y, 0);
+					}
+				}
+				else
+				{
+					if(gameBlocks[x, y]!=null)
+					{
+						GameObject.Destroy(gameBlocks[x, y]);
+						gameBlocks[x, y]=null;
+					}
+				}
+			}
+		}
 		printTiles();
 		if(activeTetromino==null)
 		{
 			if(isScreenFilled())
 			{
-				Debug.Log ("Game Over");
+				Application.LoadLevel(1);
 			}
 			else
 			{

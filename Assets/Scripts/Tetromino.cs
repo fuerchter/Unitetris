@@ -28,6 +28,7 @@ public class Tetromino : MonoBehaviour {
 	float maxRotateTimer;
 	float rotateTimer;
 	List<Vector2> coordinates; //Pivot is always at first index (taking advantage of this in rotate())
+	List<GameObject> blocks;
 	bool onGround;
 	bool[,] gameTiles;
 	
@@ -94,6 +95,14 @@ public class Tetromino : MonoBehaviour {
 		default:
 			break;
 		}
+		
+		blocks=new List<GameObject>();
+		foreach(Vector2 coordinate in coordinates)
+		{
+			GameObject block=GameObject.CreatePrimitive(PrimitiveType.Cube);
+			block.transform.position=new Vector3(coordinate.x, -coordinate.y, 0);
+			blocks.Add(block);
+		}
 	}
 	
 	public void setMaxFallTimer(float maxFallTimer)
@@ -111,7 +120,7 @@ public class Tetromino : MonoBehaviour {
 	{
 		foreach(Vector2 coordinate in coordinates)
 		{
-			if(coordinate.y==gameTiles.GetLength(1)-1 || gameTiles[(int)coordinate.x, (int)coordinate.y+1])
+			if(coordinate.y==gameTiles.GetLength(1)-1 || gameTiles[(int)coordinate.x, (int)coordinate.y+1]/* || gameTiles[(int)coordinate.x, (int)coordinate.y]*/)
 			{
 				onGround=true;
 				return true;
@@ -206,6 +215,11 @@ public class Tetromino : MonoBehaviour {
 		return coordinates;	
 	}
 	
+	public List<GameObject> getBlocks()
+	{
+		return blocks;	
+	}
+	
 	public void printCoordinates()
 	{
 		foreach(Vector2 coordinate in coordinates)
@@ -216,12 +230,23 @@ public class Tetromino : MonoBehaviour {
 	
 	void Update ()
 	{
+		for(int i=0; i<coordinates.Count; i++)
+		{
+			blocks[i].transform.position=new Vector3(coordinates[i].x, -coordinates[i].y, 0);
+		}
+		
+		if(isOnGround())
+		{
+				return;	
+		}
+		
 		rotateTimer+=Time.deltaTime;
 		if(rotateTimer>=maxRotateTimer)
 		{
 			if(Input.GetAxisRaw("Vertical")>0)
 			{
 				rotate();
+				
 				if(isOnGround())
 				{
 					return;	
